@@ -1,4 +1,5 @@
 import socket
+import ssl
 
 
 class URL:
@@ -7,11 +8,26 @@ class URL:
         print(self.scheme)
         print(url)
 
-        assert self.scheme == 'http'
+        assert self.scheme in ['http', 'https']
 
+        # http, https 처리 추가
+        if self.scheme == 'http':
+            self.port = 80
+        elif self.scheme == 'https':
+            self.port = 443
+
+        # host와 url 분리
         if '/' not in url:
             url = url + '/'
         self.host, url = url.split('/', 1)
+
+        # 커스텀 포트 처리 (예: example.com:8080)
+        # host에서 포트 분리
+        if ':' in self.host:
+            self.host, port = self.host.split(':', 1)
+            self.port = int(port)
+
+        # path 설정
         self.path = '/' + url
 
     def request(self):
@@ -22,13 +38,19 @@ class URL:
             proto=socket.IPPROTO_TCP
         )
 
-        # TCP 연결
-        # - 서버와 연결은 되었지만
-        # - 아무것도 요청하지 않음
-        # - 서버는 클라이언트가 뭔가 보내길 기다림
-        # - 클라이언트는 아무것도 안 보내고 함수 종료
-        # - 연결이 닫힘
-        s.connect((self.host, 80))
+        # TCP 연결 사 scheme에 따른 port 전달
+        s.connect((self.host, self.port))
+
+        # TCP 연결 후 SSL 래핑
+        # - SSL 핸드셰이크는 TCP 연결 수립 이후에 이루어짐
+        # - TCP 연결 없이는 SSL 암호화를 할 수 없음
+        # - 참고: docs/tcp-ssl-handshake.md
+        if self.scheme == 'https':
+            # 기본 SSL/TLS 설정을 가진 컨텍스트 생성 (인증서 검증 활성화)
+            # 참고: docs/ssl-tls.md
+            ctx = ssl.create_default_context()
+            # 일반 TCP 소켓을 SSL/TLS로 래핑하여 암호화된 소켓으로 변환
+            s = ctx.wrap_socket(s, server_hostname=self.host)
 
         # 서버에 요청 전송
         request = f"GET {self.path} HTTP/1.0\r\n"
