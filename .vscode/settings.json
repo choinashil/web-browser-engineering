@@ -1,0 +1,14 @@
+{
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "autopep8.args": [
+        "--max-line-length=120",
+        "--indent-size=4",
+        "--ignore=E501"
+    ]
+}
