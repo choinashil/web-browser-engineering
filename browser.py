@@ -16,9 +16,18 @@ class URL:
         elif self.scheme == 'https':
             self.port = 443
 
+        # host와 url 분리
         if '/' not in url:
             url = url + '/'
         self.host, url = url.split('/', 1)
+
+        # 커스텀 포트 처리 (예: example.com:8080)
+        # host에서 포트 분리
+        if ':' in self.host:
+            self.host, port = self.host.split(':', 1)
+            self.port = int(port)
+
+        # path 설정
         self.path = '/' + url
 
     def request(self):
