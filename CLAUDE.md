@@ -41,7 +41,8 @@
 
 1. 새로운 챕터 작업 시작 시:
 
-   - `main` 브랜치에서 새 브랜치 생성
+   - **중요**: `main` 브랜치로 이동 후 최신화
+   - 최신 `main`에서 새 브랜치 생성
    - 브랜치명: 시작 소제목 기준
 
 2. 작업 완료 시:
@@ -59,6 +60,10 @@
 작업: 1.5 요청과 응답, 1.6 HTML 표시하기를 함께 진행
 
 ```bash
+# main 브랜치 최신화
+git checkout main
+git pull origin main
+
 # 브랜치 생성 (시작 소제목 기준)
 git checkout -b ch1.5-requests-and-responses
 
